@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="de.efsdev.wsapm.OpenNetworkConnections.View.PluginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:ni="clr-namespace:System.Net.NetworkInformation;assembly=System"
+             xmlns:local="clr-namespace:de.efsdev.wsapm.OpenNetworkConnections"
+             xmlns:vm="clr-namespace:de.efsdev.wsapm.OpenNetworkConnections.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="316.009" d:DesignWidth="629.931" MinWidth="800" MinHeight="600" Width="Auto">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!--<vm:ViewModelLocator x:Key="Locator"/>-->
+            <SolidColorBrush x:Key="DataGridLineBrush" Color="#FFB0B0B0"/>
+            <ObjectDataProvider x:Key="TcpStateTypeEnum" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type Type="ni:TcpState" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0" Orientation="Vertical">
+            <Grid Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Rules" VerticalContentAlignment="Center"/>
+            </Grid>
+            <DataGrid Margin="0" ItemsSource="{Binding Settings.NetworkConnectionRules, Mode=TwoWay}" MinHeight="150" MaxHeight="300" AutoGenerateColumns="False" Height="150" HorizontalGridLinesBrush="{DynamicResource DataGridLineBrush}" VerticalGridLinesBrush="{DynamicResource DataGridLineBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding LocalAddress}" ClipboardContentBinding="{x:Null}" Header="Local Address"/>
+                    <DataGridTextColumn Binding="{Binding LocalPort}" ClipboardContentBinding="{x:Null}" Header="Local Port"/>
+                    <DataGridTextColumn Binding="{Binding RemoteAddress}" ClipboardContentBinding="{x:Null}" Header="Remote Address"/>
+                    <DataGridTextColumn Binding="{Binding RemotePort}" ClipboardContentBinding="{x:Null}" Header="Remote Port"/>
+                    <DataGridComboBoxColumn SelectedItemBinding="{Binding State}" ItemsSource="{Binding Source={StaticResource TcpStateTypeEnum}}" ClipboardContentBinding="{x:Null}" Header="State"/>
+                    <DataGridCheckBoxColumn Binding="{Binding Enabled}" ClipboardContentBinding="{x:Null}" Header="Enabled"/>
+                    <DataGridTemplateColumn ClipboardContentBinding="{x:Null}" Header="Actions"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+        <StackPanel Margin="0" Orientation="Vertical" Grid.Row="1">
+            <Grid Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Active connections" VerticalContentAlignment="Center"/>
+                <Button Content="Refresh" Command="{Binding RefreshActiveConnectionsCommand, IsAsync=True}" Grid.Column="1" Margin="0,0,0,-0.4" HorizontalContentAlignment="Center" HorizontalAlignment="Right" VerticalContentAlignment="Center"/>
+            </Grid>
+            <DataGrid Margin="0" IsReadOnly="True" ItemsSource="{Binding ActiveConnections, Mode=OneWay}" Height="450" AutoGenerateColumns="False" HorizontalGridLinesBrush="{DynamicResource DataGridLineBrush}" VerticalGridLinesBrush="{DynamicResource DataGridLineBrush}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding LocalAddress}" ClipboardContentBinding="{x:Null}" Header="Local Address"/>
+                    <DataGridTextColumn Binding="{Binding LocalPort}" ClipboardContentBinding="{x:Null}" Header="Local Port"/>
+                    <DataGridTextColumn Binding="{Binding RemoteAddress}" ClipboardContentBinding="{x:Null}" Header="Remote Address"/>
+                    <DataGridTextColumn Binding="{Binding RemotePort}" ClipboardContentBinding="{x:Null}" Header="Remote Port"/>
+                    <DataGridTextColumn Binding="{Binding State}" ClipboardContentBinding="{x:Null}" Header="State"/>
+                    <!--<DataGridComboBoxColumn SelectedItemBinding="{Binding State}" ItemsSource="{Binding Source={StaticResource TcpStateTypeEnum}}" ClipboardContentBinding="{x:Null}" Header="State"/>-->
+                    <DataGridTemplateColumn Header="Actions"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+        </StackPanel>
+
+    </Grid>
+</UserControl>

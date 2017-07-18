@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- This is the plugin manifest file providing additional information about this plugin. -->
+<!-- Note that the Build Action is set to 'None' and that this file gets copied to the output directory. -->
+<WsapmPlugin>
+  <!-- DescriptionSet for English language -->
+  <DescriptionSet lang="en">
+    <PluginName>Open network connections</PluginName>
+    <Description>This is plugin enables you to block standby if one of the specified network connections active.</Description>
+    <AuthorName>EFSdeveloping</AuthorName>
+  </DescriptionSet>
+
+  <!-- DescriptionSet for German language -->
+  <DescriptionSet lang="de">
+    <PluginName>Open network connections</PluginName>
+    <Description>Dieses Plugin ermöglich dir den Standby zu verhindern, wenn eine der spezifzierten Netzwerkverbindungen aktiv ist.</Description>
+    <AuthorName>EFSdeveloping</AuthorName>
+  </DescriptionSet>
+</WsapmPlugin>
