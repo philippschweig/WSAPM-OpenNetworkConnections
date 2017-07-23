@@ -28,18 +28,20 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.ViewModel
             Settings = (PluginSettings)settings;
         }
 
-        public ICommand DeleteRuleCommand => new RelayCommand<INetworkConnection>(new Action<INetworkConnection>(DeleteRuleAction));
+        public event EventHandler OnActiveConnectionsRefreshed;
+
+        public ICommand DeleteRuleCommand => new RelayCommand<NetworkConnectionRule>(new Action<NetworkConnectionRule>(DeleteRuleAction));
         public ICommand AddActiveRuleCommand { get; set; }
         public ICommand RefreshActiveConnectionsCommand => new RelayCommand<object>(new Action<object>(RefreshActiveConnectionsAction));
 
-        private void DeleteRuleAction(INetworkConnection connection)
+        private void DeleteRuleAction(NetworkConnectionRule connection)
         {
-            Debugger.Break();
+            this.Settings.NetworkConnectionRules.Remove(connection);
         }
 
         private void RefreshActiveConnectionsAction(object data)
         {
-            RaiseOnPropertyChanged(nameof(ActiveConnections));
+            this.OnActiveConnectionsRefreshed(this, null);
         }
     }
 }
