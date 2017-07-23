@@ -1,4 +1,5 @@
-﻿using de.efsdev.wsapm.OpenNetworkConnections.Library;
+﻿using de.efsdev.wsapm.OpenNetworkConnections.AOP;
+using de.efsdev.wsapm.OpenNetworkConnections.Library;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,50 +9,28 @@ using System.Xml.Serialization;
 
 namespace de.efsdev.wsapm.OpenNetworkConnections.Model
 {
-    [Serializable]
-    public class NetworkConnectionRule : ObservableObject, INetworkConnection
+    public interface INetworkConnectionRule : INetworkConnection
     {
-        private string _localAddress;
-        public string LocalAddress
-        {
-            get { return _localAddress; }
-            set { SetProperty(ref _localAddress, value, nameof(LocalAddress)); }
-        }
+        bool Enabled { get; }
+    }
 
-        private string _localPort;
-        public string LocalPort
-        {
-            get { return _localPort; }
-            set { SetProperty(ref _localPort, value, nameof(LocalPort)); }
-        }
+    [Serializable]
+    [ObservableObject]
+    public class NetworkConnectionRule : ObservableObject, INetworkConnectionRule
+    {
+        #region INetworkConnection
+        public string LocalAddress { get; set; }
 
-        private string _remoteAddress;
-        public string RemoteAddress
-        {
-            get { return _remoteAddress; }
-            set { SetProperty(ref _remoteAddress, value, nameof(RemoteAddress)); }
-        }
+        public string LocalPort { get; set; }
 
-        private string _remotePort;
-        public string RemotePort
-        {
-            get { return _remotePort; }
-            set { SetProperty(ref _remotePort, value, nameof(RemotePort)); }
-        }
+        public string RemoteAddress { get; set; }
 
-        private TcpState? _state;
-        public TcpState? State
-        {
-            get { return _state; }
-            set { SetProperty(ref _state, value, nameof(State)); }
-        }
+        public string RemotePort { get; set; }
 
-        private bool _enabled;
-        public bool Enabled
-        {
-            get { return _enabled; }
-            set { SetProperty(ref _enabled, value, nameof(Enabled)); }
-        }
+        public TcpState? State { get; set; }
+
+        public bool Enabled { get; set; }
+        #endregion
 
         public bool Matches(INetworkConnection obj)
         {
@@ -80,6 +59,11 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.Model
             if (this.State != null)
             {
                 matches.Add(this.State.Equals(obj.State));
+            }
+
+            if (matches.Count == 0)
+            {
+                return false;
             }
 
             foreach (var match in matches)

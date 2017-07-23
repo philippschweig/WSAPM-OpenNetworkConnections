@@ -33,8 +33,6 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
             }
         }
 
-        private IList<ActiveNetworkConnection> ActiveNetworkConnections;
-
         public Plugin() : base (typeof(PluginSettings))
         {
             // This is the constrcutor of you plugin class.
@@ -53,18 +51,11 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
             //
             // You can access your plugin's settings by using property 'CurrentSettings' from the base class (you will need a cast).
 
-            var matchedConnections = new List<NetworkConnectionRule>();
-            var connectionRules = ((PluginSettings)CurrentSettings).NetworkConnectionRules;
+            var rulesApplied = PluginHelper.AreRulesApplicable(((PluginSettings)CurrentSettings).NetworkConnectionRules);
 
-            foreach (var activeConnection in ActiveNetworkConnections)
+            if (rulesApplied)
             {
-                foreach (var rule in connectionRules)
-                {
-                    if (rule.Matches(activeConnection))
-                    {
-                        return new PluginCheckSuspendResult(true, "Active network conection.");
-                    }
-                }
+                return new PluginCheckSuspendResult(true, "Active network conection.");
             }
 
             return new PluginCheckSuspendResult(false, "No active network conection.");
@@ -99,9 +90,6 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
             // The return code indicates if preparation was successful.
             //
             // When your plugin does not need specific preparation, just return true:
-
-            ActiveNetworkConnections = NetworkConnectionsHelper.GetActiveTCPConnections();
-
             return true;
         }
 
@@ -113,9 +101,6 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
             // The return code indicates if tearing down was successfull.
             //
             // When your plugin does not need specific tearing down, just return true:
-
-            ActiveNetworkConnections = null;
-
             return true;
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using de.efsdev.wsapm.OpenNetworkConnections.AOP;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -8,23 +9,23 @@ using System.Text;
 
 namespace de.efsdev.wsapm.OpenNetworkConnections.Library
 {
-    public class ObservableObject : INotifyPropertyChanged
+    public abstract class ObservableObject : INotifyPropertyChanged
     {
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void RaiseOnPropertyChanged(string propertyName)
+        public void InvokePropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void RaiseOnPropertyChangedForAllProperties()
+        public void InvokePropertyChangedForAllProperties()
         {
             var properties = GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var item in properties)
             {
-                RaiseOnPropertyChanged(item.Name);
+                InvokePropertyChanged(item.Name);
             }
         }
 
@@ -32,7 +33,7 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.Library
         {
             if (EqualityComparer<T>.Default.Equals(field, value)) return false;
             field = value;
-            RaiseOnPropertyChanged(propertyName);
+            InvokePropertyChanged(propertyName);
             return true;
         }
         #endregion
