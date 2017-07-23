@@ -33,7 +33,7 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
             }
         }
 
-        public Plugin() : base (typeof(PluginSettings))
+        public Plugin() : base(typeof(PluginSettings))
         {
             // This is the constrcutor of you plugin class.
             // You have to call the base class' constructor with the type of your settings class here.
@@ -55,10 +55,10 @@ namespace de.efsdev.wsapm.OpenNetworkConnections
 
             if (rulesApplied)
             {
-                return new PluginCheckSuspendResult(true, "Active network conection.");
+                return new PluginCheckSuspendResult(true, "Active network conections.");
             }
 
-            return new PluginCheckSuspendResult(false, "No active network conection.");
+            return new PluginCheckSuspendResult(false, "No active network conections.");
         }
 
         protected override bool Initialize()
