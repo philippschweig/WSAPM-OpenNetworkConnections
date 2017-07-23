@@ -9,7 +9,7 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.Model
     [Serializable]
     public class PluginSettings : ObservableObject
     {
-        public List<NetworkConnectionRule> NetworkConnectionRules { get; set; }
+        public List<NetworkConnectionRule> NetworkConnectionRules { get; set; } = new List<NetworkConnectionRule>();
 
         public static PluginSettings DefaultSettingsWebserver()
         {

@@ -1,8 +1,10 @@
-﻿using de.efsdev.wsapm.OpenNetworkConnections.Library;
+﻿using de.efsdev.wsapm.OpenNetworkConnections.AOP;
+using de.efsdev.wsapm.OpenNetworkConnections.Library;
 using de.efsdev.wsapm.OpenNetworkConnections.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -14,34 +16,77 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.ViewModel
 {
     public class PluginViewModel : ObservableObject
     {
-        private PluginSettings _settings;
-        public PluginSettings Settings
-        {
-            get { return _settings; }
-            set { SetProperty(ref _settings, value, nameof(Settings)); }
-        }
+        public PluginSettings Settings { get; set; }
 
-        public IList<ActiveNetworkConnection> ActiveConnections => NetworkConnectionsHelper.GetActiveTCPConnections();
+        [ObservableProperty]
+        public ObservableCollection<NetworkConnectionRuleViewModel> Rules { get; set; }
+
+        public IList<ActiveNetworkConnection> ActiveConnections => PluginHelper.GetActiveTCPConnections();
 
         public void SetSettingsFromObject(object settings)
         {
             Settings = (PluginSettings)settings;
+
+            var rules = new ObservableCollection<NetworkConnectionRuleViewModel>();
+            foreach (var rule in Settings.NetworkConnectionRules)
+            {
+                rules.Add(new NetworkConnectionRuleViewModel(rule));
+            }
+
+            Rules = rules;
+            Rules.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
+            {
+                if (e.Action == NotifyCollectionChangedAction.Add)
+                {
+                    foreach (var item in e.NewItems) AddRule((item as NetworkConnectionRuleViewModel).ProxyModel);
+                }
+                else if (e.Action == NotifyCollectionChangedAction.Remove)
+                {
+                    foreach (var item in e.OldItems) RemoveRule((item as NetworkConnectionRuleViewModel).ProxyModel);
+                }
+            };
         }
 
         public event EventHandler OnActiveConnectionsRefreshed;
+        public event EventHandler<GenericEventArgs<NetworkConnectionRuleViewModel>> OnAddNewRuleAction;
 
-        public ICommand DeleteRuleCommand => new RelayCommand<NetworkConnectionRule>(new Action<NetworkConnectionRule>(DeleteRuleAction));
-        public ICommand AddActiveRuleCommand { get; set; }
-        public ICommand RefreshActiveConnectionsCommand => new RelayCommand<object>(new Action<object>(RefreshActiveConnectionsAction));
-
-        private void DeleteRuleAction(NetworkConnectionRule connection)
+        private void AddRule(NetworkConnectionRule connection)
         {
-            this.Settings.NetworkConnectionRules.Remove(connection);
+            Settings.NetworkConnectionRules.Add(connection);
         }
 
-        private void RefreshActiveConnectionsAction(object data)
+        private void RemoveRule(NetworkConnectionRule connection)
+        {
+            Settings.NetworkConnectionRules.Remove(connection);
+        }
+
+        public ICommand ResetToDefaults => new RelayCommand<object>((object data) =>
+        {
+            SetSettingsFromObject(PluginSettings.DefaultSettingsWebserver());
+        });
+
+        public ICommand AddNewRuleCommand => new RelayCommand<object>(new Action<object>((object data) =>
+        {
+            var ruleViewModel = new NetworkConnectionRuleViewModel();
+            Rules.Add(ruleViewModel);
+            OnAddNewRuleAction.Invoke(this, new GenericEventArgs<NetworkConnectionRuleViewModel>(ruleViewModel));
+        }));
+
+        public ICommand DeleteAllRulesCommand => new RelayCommand<object>(new Action<object>((object data) =>
+        {
+            Rules.Clear();
+        }));
+
+        public ICommand DeleteRuleCommand => new RelayCommand<NetworkConnectionRuleViewModel>(new Action<NetworkConnectionRuleViewModel>((NetworkConnectionRuleViewModel ruleViewModel) =>
+        {
+            Rules.Remove(ruleViewModel);
+        }));
+
+        public ICommand AddActiveRuleCommand { get; set; }
+
+        public ICommand RefreshActiveConnectionsCommand => new RelayCommand<object>(new Action<object>((object data) =>
         {
             this.OnActiveConnectionsRefreshed(this, null);
-        }
+        }));
     }
 }

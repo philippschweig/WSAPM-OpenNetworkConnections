@@ -1,6 +1,8 @@
-﻿using de.efsdev.wsapm.OpenNetworkConnections.ViewModel;
+﻿using de.efsdev.wsapm.OpenNetworkConnections.Library;
+using de.efsdev.wsapm.OpenNetworkConnections.ViewModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -30,12 +32,18 @@ namespace de.efsdev.wsapm.OpenNetworkConnections.View
         {
             InitializeComponent();
             ViewModel.OnActiveConnectionsRefreshed += ViewModel_OnActiveConnectionsRefreshed;
+            ViewModel.OnAddNewRuleAction += ViewModel_OnAddNewRuleAction;
             this.UpdateDataContext();
         }
 
         private void ViewModel_OnActiveConnectionsRefreshed(object sender, EventArgs e)
         {
             this.UpdateDataContext();
+        }
+
+        private void ViewModel_OnAddNewRuleAction(object sender, GenericEventArgs<NetworkConnectionRuleViewModel> e)
+        {
+            this.dataGridRules.SelectedItem = e.EventData;
         }
 
         private void UpdateDataContext()
