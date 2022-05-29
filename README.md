@@ -22,3 +22,7 @@ develop | [![Build status: develop](https://img.shields.io/appveyor/ci/ErdnussFl
 
 ## Description
 Open Network Connections is a plugin for [Windows Server Advanced Power Management](https://decatec.de/software/windows-server-advanced-power-management/). It enables you to block windows to go into standby if one tcp network connection is open.
+
+## Screenshots
+
+<img src="screenshots/settings.png" width="600">
